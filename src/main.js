@@ -7,11 +7,26 @@ import {
   faPause,
   faBackwardStep,
   faForwardStep,
+  faSpinner,
+  faRepeat,
+  faShuffle,
+  faVolumeUp,
+  faVolumeDown,
 } from "@fortawesome/free-solid-svg-icons";
 import { createPinia } from "pinia";
 
 // add icons to library
-library.add(faPlay, faPause, faBackwardStep, faForwardStep);
+library.add(
+  faPlay,
+  faPause,
+  faBackwardStep,
+  faForwardStep,
+  faSpinner,
+  faRepeat,
+  faShuffle,
+  faVolumeUp,
+  faVolumeDown
+);
 
 const pinia = createPinia();
 createApp(App)

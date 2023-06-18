@@ -1,240 +1,37 @@
 <template>
   <div class="page--wrapper">
-    <nav>MUSIC APP</nav>
-    <main class="main">
-      <section class="player--container">
-        <div
-          class="song__img"
-          :style="{
-            'background-image': `url(${currentSong.photo})`,
-            'background-size': 'contain',
-          }"
-        ></div>
-        <div class="song--controls">
-          <span class="current-song"
-            >{{ currentSong.artist }} - {{ currentSong.songName }}</span
-          >
-          <progress
-            min="0"
-            max="100"
-            :value="progressBarValue >= 0 && progressBarValue"
-            @click="musicStore.seekPlayer($event)"
-          ></progress>
-          <p class="song--timer">
-            <span v-if="currentTime">{{ currentTime }}</span>
-            <span v-else>0:00</span>
-            <span>{{ currentSong.duration }}</span>
-          </p>
-          <div class="controls">
-            <!-- add shuffle and repeat features later -->
-            <p class="control__p">
-              <font-awesome-icon
-                :icon="['fa-solid', 'fa-backward-step']"
-                class="icon"
-                @click="musicStore.backward"
-              />
-              <span class="play-pause"
-                ><font-awesome-icon
-                  :icon="['fa-solid', isPlaying ? 'fa-pause' : 'fa-play']"
-                  class="icon"
-                  @click="musicStore.playPause"
-              /></span>
-              <font-awesome-icon
-                :icon="['fa-solid', 'fa-forward-step']"
-                class="icon"
-                @click="musicStore.forward"
-              />
-            </p>
-          </div>
-        </div>
-      </section>
-      <section class="playlist--container" v-if="songList[0].duration">
-        <article
-          v-for="song in songList"
-          :key="song.songName"
-          class="song__article"
-          @click="musicStore.playSelectedSong($event)"
-        >
-          <p class="song--name">{{ song.songName }}</p>
-          <p class="song--duration">{{ song.duration }}</p>
-        </article>
-      </section>
+    <TheLoader v-if="loading" />
+    <main class="main" v-if="!loading">
+      <music-player />
+      <song-playlist />
     </main>
   </div>
 </template>
 
 <script setup>
-import { watch } from "vue";
-import { storeToRefs } from "pinia";
-import { onMounted } from "vue";
+import TheLoader from "./components/TheLoader.vue";
+import SongPlaylist from "./components/SongPlaylist.vue";
+import MusicPlayer from "./components/MusicPlayer.vue";
+import { computed, onMounted } from "vue";
 import { useMusicStore } from "./stores/music";
+
 // music store
 const musicStore = useMusicStore();
+// populate song list with their respective durations
+// load first song on create
 musicStore.getSongDurations();
-// loading first song on create
 musicStore.initialSong();
-// populate song list with weach song's duration
-const { currentSong, isPlaying, songList, progressBarValue, currentTime } =
-  storeToRefs(musicStore);
-watch(isPlaying, () => {});
-watch(progressBarValue, () => {});
-// mounted function to get current song, update song process bar,and forward song if previous song finishes
+
+// mount function to get current song, update song process bar,and forward song if previous song finishes
 onMounted(() => {
   musicStore.progressBarUpdate();
   musicStore.hasSongEnded();
 });
+
+// computed value for loading status
+const loading = computed(() => {
+  return musicStore.songList && !musicStore.songList[0].photo;
+});
 </script>
 
-<style lang="scss">
-// reponsive widths
-$md: 60em;
-// border colors
-$pink-border: 1px solid #d2abc7;
-$pink-border-light: 0.7px solid #d2abc7;
-
-@mixin responsive($size) {
-  @media (min-width: $size) {
-    @content;
-  }
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-body {
-  min-height: 100vh;
-  background: linear-gradient(to bottom right, #b897af, #1e05db);
-}
-.page--wrapper {
-  width: 75%;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  // navigation
-  nav {
-    margin-block: 3rem;
-  }
-  main {
-    // background: linear-gradient(to bottom right, #ffd0f2, #5b45ff);
-    background-color: #eee;
-    width: 80%;
-    margin: 0 auto;
-    border: {
-      right: $pink-border;
-      left: $pink-border;
-      bottom: $pink-border;
-      radius: 50px;
-      bottom-left-radius: 20px;
-      bottom-right-radius: 20px;
-    }
-  }
-  // player container
-  .player--container {
-    color: #eee;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    border-width: 0.7px;
-    border: {
-      right: $pink-border-light;
-      top: $pink-border-light;
-      bottom: $pink-border-light;
-      radius: 50px;
-    }
-    // song image div
-    .song__img {
-      border-radius: 50%;
-      border: 0.8px solid #a25fcbaa;
-      width: 6.5rem;
-      height: 6.5rem;
-    }
-    // controls section
-    .song--controls {
-      color: #eee;
-      width: 80%;
-      span.current-song {
-        display: block;
-        text-align: center;
-        margin-bottom: 0.4rem;
-        color: #5c0397;
-      }
-      p.song--timer {
-        color: #000;
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.85rem;
-        color: #380151;
-        font-weight: lighter;
-        span:first-child {
-          margin-left: 1rem;
-        }
-        span:nth-child(2) {
-          margin-right: 1rem;
-        }
-      }
-      progress {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        height: 0.7rem;
-        width: 90%;
-        cursor: pointer;
-        border-radius: 10px;
-        display: block;
-        margin: 0 auto;
-      }
-      // controls
-      .control__p {
-        color: #eee;
-        text-align: center;
-        display: flex;
-        justify-content: space-around;
-        width: 50%;
-        margin: 0.5rem auto 0 auto;
-        color: #3a2846;
-        .icon {
-          cursor: pointer;
-        }
-      }
-    }
-  }
-  // playlist container
-  .playlist--container {
-    display: flex;
-    flex-direction: column;
-    color: #000;
-    // margin-top: 1.5rem;
-    article {
-      display: flex;
-      color: #000;
-      justify-content: space-between;
-      border-bottom: $pink-border;
-      padding-block: 1.1rem;
-      border-radius: 8px;
-      font-weight: 600;
-      color: #3a2846;
-      cursor: pointer;
-      &:hover {
-        background-color: #f5ecf987;
-      }
-      &:last-child {
-        border-bottom: none;
-      }
-      p.song--name {
-        // color: #eee;
-        margin-left: 1rem;
-      }
-      p.song--duration {
-        // color: #eee;
-        margin-right: 1rem;
-      }
-    }
-  }
-  // responsive -- medium to larger screen widths
-  @include responsive($md) {
-  }
-}
-</style>
+<style lang="scss" src="./style.scss"></style>
