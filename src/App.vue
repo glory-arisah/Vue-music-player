@@ -3,29 +3,45 @@
     <nav>MUSIC APP</nav>
     <main class="main">
       <section class="player--container">
-        <div class="song__img"></div>
+        <div
+          class="song__img"
+          :style="{
+            'background-image': `url(${currentSong.photo})`,
+            'background-size': 'contain',
+          }"
+        ></div>
         <div class="song--controls">
           <span class="current-song"
             >{{ currentSong.artist }} - {{ currentSong.songName }}</span
           >
-          <progress min="0" max="100" value="50"></progress>
+          <progress
+            min="0"
+            max="100"
+            :value="progressBarValue >= 0 && progressBarValue"
+            @click="musicStore.seekPlayer($event)"
+          ></progress>
+          <p class="song--timer">
+            <span v-if="currentTime">{{ currentTime }}</span>
+            <span v-else>0:00</span>
+            <span>{{ currentSong.duration }}</span>
+          </p>
           <div class="controls">
             <!-- add shuffle and repeat features later -->
             <p class="control__p">
               <font-awesome-icon
                 :icon="['fa-solid', 'fa-backward-step']"
-                ref="backward"
+                class="icon"
                 @click="musicStore.backward"
               />
               <span class="play-pause"
                 ><font-awesome-icon
                   :icon="['fa-solid', isPlaying ? 'fa-pause' : 'fa-play']"
-                  ref="playBtn"
+                  class="icon"
                   @click="musicStore.playPause"
               /></span>
               <font-awesome-icon
                 :icon="['fa-solid', 'fa-forward-step']"
-                ref="forward"
+                class="icon"
                 @click="musicStore.forward"
               />
             </p>
@@ -37,6 +53,7 @@
           v-for="song in songList"
           :key="song.songName"
           class="song__article"
+          @click="musicStore.playSelectedSong($event)"
         >
           <p class="song--name">{{ song.songName }}</p>
           <p class="song--duration">{{ song.duration }}</p>
@@ -53,20 +70,27 @@ import { onMounted } from "vue";
 import { useMusicStore } from "./stores/music";
 // music store
 const musicStore = useMusicStore();
+musicStore.getSongDurations();
 // loading first song on create
 musicStore.initialSong();
 // populate song list with weach song's duration
-musicStore.getSongDurations();
-const { currentSong, isPlaying, songList } = storeToRefs(musicStore);
-watch(isPlaying, () => {
-  // isPlaying = newVal;
+const { currentSong, isPlaying, songList, progressBarValue, currentTime } =
+  storeToRefs(musicStore);
+watch(isPlaying, () => {});
+watch(progressBarValue, () => {});
+// mounted function to get current song, update song process bar,and forward song if previous song finishes
+onMounted(() => {
+  musicStore.progressBarUpdate();
+  musicStore.hasSongEnded();
 });
-// mounted function to get current song
-onMounted(() => {});
 </script>
 
 <style lang="scss">
+// reponsive widths
 $md: 60em;
+// border colors
+$pink-border: 1px solid #d2abc7;
+$pink-border-light: 0.7px solid #d2abc7;
 
 @mixin responsive($size) {
   @media (min-width: $size) {
@@ -81,7 +105,7 @@ $md: 60em;
 }
 body {
   min-height: 100vh;
-  background-color: #f2d0f5;
+  background: linear-gradient(to bottom right, #b897af, #1e05db);
 }
 .page--wrapper {
   width: 75%;
@@ -93,13 +117,14 @@ body {
     margin-block: 3rem;
   }
   main {
-    background: linear-gradient(to bottom right, #ffd0f2, #5b45ff);
-    width: 70%;
+    // background: linear-gradient(to bottom right, #ffd0f2, #5b45ff);
+    background-color: #eee;
+    width: 80%;
     margin: 0 auto;
     border: {
-      right: 1px solid #a25fcbaa;
-      left: 1px solid #a25fcbaa;
-      bottom: 1px solid #a25fcbaa;
+      right: $pink-border;
+      left: $pink-border;
+      bottom: $pink-border;
       radius: 50px;
       bottom-left-radius: 20px;
       bottom-right-radius: 20px;
@@ -114,17 +139,17 @@ body {
     justify-content: space-between;
     border-width: 0.7px;
     border: {
-      right: 0.7px solid #a25fcbaa;
-      top: 0.7px solid #a25fcbaa;
-      bottom: 0.7px solid #a25fcbaa;
+      right: $pink-border-light;
+      top: $pink-border-light;
+      bottom: $pink-border-light;
       radius: 50px;
     }
     // song image div
     .song__img {
       border-radius: 50%;
       border: 0.8px solid #a25fcbaa;
-      width: 6rem;
-      height: 6rem;
+      width: 6.5rem;
+      height: 6.5rem;
     }
     // controls section
     .song--controls {
@@ -135,6 +160,20 @@ body {
         text-align: center;
         margin-bottom: 0.4rem;
         color: #5c0397;
+      }
+      p.song--timer {
+        color: #000;
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #380151;
+        font-weight: lighter;
+        span:first-child {
+          margin-left: 1rem;
+        }
+        span:nth-child(2) {
+          margin-right: 1rem;
+        }
       }
       progress {
         -webkit-appearance: none;
@@ -156,7 +195,7 @@ body {
         width: 50%;
         margin: 0.5rem auto 0 auto;
         color: #3a2846;
-        font-awesome-icon {
+        .icon {
           cursor: pointer;
         }
       }
@@ -172,14 +211,14 @@ body {
       display: flex;
       color: #000;
       justify-content: space-between;
-      border-bottom: 1.2px solid #a25fcbaa;
-      padding-block: 1.2rem;
+      border-bottom: $pink-border;
+      padding-block: 1.1rem;
       border-radius: 8px;
       font-weight: 600;
       color: #3a2846;
       cursor: pointer;
       &:hover {
-        background-color: #f6ebff87;
+        background-color: #f5ecf987;
       }
       &:last-child {
         border-bottom: none;
