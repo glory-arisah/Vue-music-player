@@ -36,5 +36,5 @@
 import { useMusicStore } from "@/stores/music";
 import { storeToRefs } from "pinia";
 const musicStore = useMusicStore();
-const { shuffle, repeat } = storeToRefs(musicStore);
+const { shuffle, repeat, isPlaying } = storeToRefs(musicStore);
 </script>
