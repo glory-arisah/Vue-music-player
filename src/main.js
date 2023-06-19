@@ -12,6 +12,7 @@ import {
   faShuffle,
   faVolumeUp,
   faVolumeDown,
+  faMusic,
 } from "@fortawesome/free-solid-svg-icons";
 import { createPinia } from "pinia";
 
@@ -25,7 +26,8 @@ library.add(
   faRepeat,
   faShuffle,
   faVolumeUp,
-  faVolumeDown
+  faVolumeDown,
+  faMusic
 );
 
 const pinia = createPinia();

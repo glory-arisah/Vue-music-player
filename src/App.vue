@@ -12,25 +12,33 @@
 import TheLoader from "./components/TheLoader.vue";
 import SongPlaylist from "./components/SongPlaylist.vue";
 import MusicPlayer from "./components/MusicPlayer.vue";
-import { computed, onMounted } from "vue";
+import { computed, onMounted, onBeforeMount } from "vue";
 import { useMusicStore } from "./stores/music";
 
 // music store
 const musicStore = useMusicStore();
-// populate song list with their respective durations
+// populate song list with their respective durations and
 // load first song on create
-musicStore.getSongDurations();
 musicStore.initialSong();
+musicStore.hasSongEnded();
 
+// fetch song durations once
+onBeforeMount(() => {
+  musicStore.getSongDurations();
+});
 // mount function to get current song, update song process bar,and forward song if previous song finishes
 onMounted(() => {
   musicStore.progressBarUpdate();
-  musicStore.hasSongEnded();
 });
+
+let haveDurationsLoaded = (songList) => {
+  return songList.every((songObj) => songObj.duration);
+};
 
 // computed value for loading status
 const loading = computed(() => {
-  return musicStore.songList && !musicStore.songList[0].photo;
+  const songList = musicStore.songList;
+  return !haveDurationsLoaded(songList);
 });
 </script>
 

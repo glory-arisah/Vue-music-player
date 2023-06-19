@@ -1,5 +1,5 @@
 <template>
-  <section class="playlist--container" v-if="songList[0].duration">
+  <section class="playlist--container">
     <article
       v-for="song in songList"
       :data-song-name="song.songName"
@@ -8,9 +8,9 @@
         song__article: true,
         highlighted: currentlyPlayingId === song.index,
       }"
-      @click="musicStore.playSelectedSong($event)"
+      @click="musicStore.playSelectedSong($event.target.dataset.songName)"
     >
-      <p class="song--name" :data-song-name="song.songName">
+      <p class="song--name">
         <span :data-song-name="song.songName">{{ song.songName }}</span>
         <span :data-song-name="song.songName"> - {{ song.artist }}</span>
       </p>
