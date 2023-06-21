@@ -8,11 +8,11 @@
         song__article: true,
         highlighted: currentlyPlayingId === song.index,
       }"
-      @click="musicStore.playSelectedSong($event.target.dataset.songName)"
+      @click="musicStore.playSelectedSong(song)"
     >
       <p class="song--name">
-        <span :data-song-name="song.songName">{{ song.songName }}</span>
-        <span :data-song-name="song.songName"> - {{ song.artist }}</span>
+        <span :data-song-name="song">{{ song.songName }}</span>
+        <span :data-song-name="song"> - {{ song.artist }}</span>
       </p>
       <p class="song--duration">
         {{ song.duration }}

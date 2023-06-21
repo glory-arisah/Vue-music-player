@@ -40,7 +40,7 @@
           <input
             type="range"
             value="40"
-            @input="musicStore.volumeChange($event)"
+            @input="musicStore.volumeChange($event.target.value)"
           />
           <font-awesome-icon
             v-show="volume >= 35"

@@ -4,97 +4,103 @@ const randomNumberGen = (songListLength) => {
   return Math.floor(Math.random() * songListLength);
 };
 
+const appendZero = (value, position) => {
+  if (position === "prefix") {
+    return `0${String(value)}`;
+  } else if (position === "suffix") {
+    return `${String(value)}0`;
+  }
+};
+
 export const useMusicStore = defineStore({
   id: "music",
-  state() {
-    return {
-      audio: new Audio(),
-      index: 0,
-      isPlaying: false,
-      songList: [
-        {
-          index: 0,
-          artist: "Led zeppelin",
-          songName: "All of my love",
-          file: require("@/assets/songs/all-of-my-love.mp3"),
-        },
-        {
-          index: 1,
-          artist: "Queen",
-          songName: "Don't stop me now",
-          file: require("@/assets/songs/dont-stop-me-now.mp3"),
-        },
-        {
-          index: 2,
-          artist: "Queen",
-          songName: "Hammer to fall",
-          file: require("@/assets/songs/hammer-to-fall.mp3"),
-        },
-        {
-          index: 3,
-          artist: "Led zeppelin",
-          songName: "Immigrant Song",
-          file: require("@/assets/songs/immigrant-song.mp3"),
-        },
-        {
-          index: 4,
-          artist: "David Bowie",
-          songName: "Lady Stardust",
-          file: require("@/assets/songs/lady-stardust.mp3"),
-        },
-        {
-          index: 5,
-          artist: "David Bowie",
-          songName: "Moonage Daydream",
-          file: require("@/assets/songs/moonage-daydream.mp3"),
-        },
-        {
-          index: 6,
-          artist: "Queen",
-          songName: "Seven Seas of Rhye",
-          file: require("../assets/songs/seven-seas-of-rhye.mp3"),
-        },
-        {
-          index: 7,
-          artist: "David Bowie",
-          songName: "Starman",
-          file: require("../assets/songs/starman.mp3"),
-        },
-        {
-          index: 8,
-          artist: "Queen",
-          songName: "Under pressure",
-          file: require("../assets/songs/under-pressure.mp3"),
-        },
-        {
-          index: 9,
-          artist: "Queen",
-          songName: "We will rock you",
-          file: require("../assets/songs/we-will-rock-you.mp3"),
-        },
-      ],
-      currentSong: {},
-      progressValue: 0,
-      currentTime: null,
-      repeat: false,
-      shuffle: false,
-      volume: 40,
-    };
-  },
+  state: () => ({
+    audio: new Audio(),
+    index: 0,
+    isPlaying: false,
+    songList: [
+      {
+        index: 0,
+        artist: "markotopa",
+        songName: "A call to the soul",
+        file: require("@/assets/songs/a-call-to-the-soul.mp3"),
+      },
+      {
+        index: 1,
+        artist: "Romarecord1973",
+        songName: "A small miracle",
+        file: require("@/assets/songs/a-small-miracle.mp3"),
+      },
+      {
+        index: 2,
+        artist: "Onoychenkomusic",
+        songName: "Awaken",
+        file: require("@/assets/songs/awaken.mp3"),
+      },
+      {
+        index: 3,
+        artist: "orangery",
+        songName: "Coniferous forest",
+        file: require("@/assets/songs/coniferous-forest.mp3"),
+      },
+      {
+        index: 4,
+        artist: "Lesfm",
+        songName: "Easy lifestyle",
+        file: require("@/assets/songs/easy-lifestyle.mp3"),
+      },
+      {
+        index: 5,
+        artist: "Lexin_Music",
+        songName: "Eco technology",
+        file: require("@/assets/songs/eco-technology.mp3"),
+      },
+      {
+        index: 6,
+        artist: "AlexiAction",
+        songName: "Lifelike",
+        file: require("../assets/songs/lifelike.mp3"),
+      },
+      {
+        index: 7,
+        artist: "penguinmusic",
+        songName: "Modern Vlog",
+        file: require("../assets/songs/modern-vlog.mp3"),
+      },
+      {
+        index: 8,
+        artist: "RomanSenykMusic",
+        songName: "Waterfall",
+        file: require("../assets/songs/waterfall.mp3"),
+      },
+    ],
+    currentSong: {},
+    progressValue: 0,
+    currentTime: null,
+    repeat: false,
+    shuffle: false,
+    volume: 40,
+  }),
   actions: {
+    // on load methods
     // initialized currentSong object on page load
     initialSong() {
       const currentSong = this.songList[this.index];
       this.currentSong = currentSong;
       this.audio.src = currentSong.file;
       this.audio.onloadedmetadata = () => {
-        const duration = this.formatDuration(this.audio.duration);
-        localStorage.setItem(
-          "currentSongObj",
-          JSON.stringify({ ...this.currentSong, duration })
-        );
+        localStorage.setItem("currSongId", JSON.stringify({ id: this.index }));
       };
-      localStorage.setItem("playStatus", JSON.stringify("paused"));
+    },
+    // get song durations
+    getSongDurations() {
+      this.songList.map((songObj) => {
+        let _audio = new Audio(songObj.file);
+        // set value of song duration after meta data loads
+        _audio.onloadedmetadata = () => {
+          songObj.duration = this.formatDuration(_audio.duration);
+        };
+      });
     },
 
     // plays current audio file
@@ -103,26 +109,26 @@ export const useMusicStore = defineStore({
       if (play !== undefined) {
         play.catch(() => this.audio.play());
       }
-
-      localStorage.setItem("playStatus", JSON.stringify("playing"));
       this.isPlaying = true;
     },
 
     // pauses current audio file
     pause() {
       this.audio.pause();
-      localStorage.setItem("playStatus", JSON.stringify("paused"));
       this.isPlaying = false;
     },
     playPause() {
       this.audio.paused ? this.play() : this.pause();
     },
 
-    // utility method for refactoring forward and backward features
-    backwardForwardUtil(navType) {
-      // reset audio currentTime and progressValue on navigation
-      this.progressValue = 0;
+    // utility methods
+    resetSong() {
       this.audio.currentTime = 0;
+      this.progressValue = 0;
+    },
+    // utility method for refactoring forward() and backward() methods
+    backwardForwardUtil(navType) {
+      this.resetSong();
       // check if shuffle is on
       if (this.shuffle) {
         this.shuffleSongs();
@@ -136,9 +142,9 @@ export const useMusicStore = defineStore({
         const currentSong = this.songList[this.index];
         this.currentSong = currentSong;
         // update the current song value in localStorage
-        localStorage.setItem("currentSongObj", JSON.stringify(currentSong));
+        localStorage.setItem("currSongId", JSON.stringify({ id: this.index }));
         this.audio.src = currentSong.file;
-        this.play().catch((error) => console.log(error));
+        this.play().catch(() => this.play());
       }
     },
     // play previous song in playlist
@@ -150,52 +156,33 @@ export const useMusicStore = defineStore({
       this.backwardForwardUtil("forward");
     },
 
+    // utility function to convert audio time to music player format
     formatDuration(duration, progressBar = false) {
       const minuteVal = Math.floor(duration / 60);
       const secondVal = Math.floor(duration - minuteVal * 60);
       let checkSeconds = null;
       if (progressBar) {
         checkSeconds =
-          secondVal.toString().length === 1
-            ? `0${String(secondVal)}`
+          String(secondVal).length === 1
+            ? appendZero(secondVal, "prefix")
             : String(secondVal);
       } else {
         checkSeconds =
-          secondVal.toString().length === 1
-            ? `${String(secondVal)}0`
+          String(secondVal).length === 1
+            ? appendZero(secondVal, "suffix")
             : String(secondVal);
       }
       const finalTime = `${minuteVal.toString()}:${checkSeconds}`;
       return finalTime;
     },
 
-    // get song durations
-    getSongDurations() {
-      this.songList.map((songObj) => {
-        let _audio = new Audio(songObj.file);
-        // set value of song duration after meta data loads
-        _audio.onloadedmetadata = () => {
-          songObj.duration = this.formatDuration(_audio.duration);
-        };
-      });
-    },
-
     // play audio on the playlist that is clicked on
-    playSelectedSong(songName) {
-      let selectedSongName = songName;
-      const currentSong = this.songList.find((songObj) => {
-        this.index = songObj.index;
-        return songObj.songName === selectedSongName;
-      });
-      // set current song to the song that matched the song name in the song list array
-      this.currentSong = currentSong;
-      try {
-        this.audio.src = currentSong.file;
-        localStorage.setItem("currentSongObj", JSON.stringify(currentSong));
-        this.play();
-      } catch (error) {
-        console.log(error);
-      }
+    async playSelectedSong(songObj) {
+      this.resetSong();
+      this.currentSong = songObj;
+      this.audio.src = this.currentSong.file;
+      localStorage.setItem("currSongId", JSON.stringify({ id: this.index }));
+      await this.play();
     },
 
     // update progressBar value with audio's currentTime attribute
@@ -231,7 +218,7 @@ export const useMusicStore = defineStore({
     // repeat song feature
     repeatSong() {
       this.audio.currentTime = 0;
-      this.play();
+      this.play().catch(() => this.audio.play());
     },
 
     // song shuffle feature
@@ -248,14 +235,14 @@ export const useMusicStore = defineStore({
       this.index = randomIndex;
       const currentSong = this.songList[randomIndex];
       this.currentSong = currentSong;
-      localStorage.setItem("currentSongObj", JSON.stringify(currentSong));
+      localStorage.setItem("currSongId", JSON.stringify({ id: this.index }));
       this.audio.src = currentSong.file;
       this.play();
     },
 
     // update audio volume
-    volumeChange(event) {
-      const volume = event.target.value;
+    volumeChange(value) {
+      const volume = value;
       this.audio.volume = volume / 100;
       this.volume = volume;
     },
