@@ -117,8 +117,8 @@ export const useMusicStore = defineStore({
       this.audio.pause();
       this.isPlaying = false;
     },
-    playPause() {
-      this.audio.paused ? this.play() : this.pause();
+    async playPause() {
+      this.audio.paused ? await this.play() : this.pause();
     },
 
     // utility methods
@@ -182,7 +182,7 @@ export const useMusicStore = defineStore({
       this.currentSong = songObj;
       this.audio.src = this.currentSong.file;
       localStorage.setItem("currSongId", JSON.stringify({ id: this.index }));
-      await this.play();
+      await this.play().catch(() => this.play());
     },
 
     // update progressBar value with audio's currentTime attribute
@@ -218,7 +218,7 @@ export const useMusicStore = defineStore({
     // repeat song feature
     repeatSong() {
       this.audio.currentTime = 0;
-      this.play().catch(() => this.audio.play());
+      this.play().catch(() => this.play());
     },
 
     // song shuffle feature
@@ -226,7 +226,7 @@ export const useMusicStore = defineStore({
       this.shuffle = !this.shuffle;
     },
     // generate a random index for the song list different from the previous index
-    shuffleSongs() {
+    async shuffleSongs() {
       const songListLength = this.songList.length;
       let randomIndex = randomNumberGen(songListLength);
       while (this.index === randomIndex) {
@@ -237,7 +237,7 @@ export const useMusicStore = defineStore({
       this.currentSong = currentSong;
       localStorage.setItem("currSongId", JSON.stringify({ id: this.index }));
       this.audio.src = currentSong.file;
-      this.play();
+      await this.play();
     },
 
     // update audio volume

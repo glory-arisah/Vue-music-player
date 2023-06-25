@@ -73,8 +73,6 @@ const { currentTime, currentSong, progressValue, volume, isPlaying } =
   justify-content: center;
   align-items: center;
   .music--icon {
-    font-size: 3rem;
-    color: #3a2846;
   }
 }
 </style>
