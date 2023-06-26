@@ -3,7 +3,7 @@
     :icon="['fa-solid', 'fa-repeat']"
     class="icon smaller"
     :style="{
-      color: repeat ? '#a25fcbaa' : '#3a2846',
+      color: repeat ? '#fff3f0' : '#3a2846',
     }"
     @click="musicStore.setRepeat"
   />
@@ -26,7 +26,7 @@
     :icon="['fa-solid', 'fa-shuffle']"
     class="icon smaller"
     :style="{
-      color: shuffle ? '#a25fcbaa' : '#3a2846',
+      color: shuffle ? '#fff3f0' : '#3a2846',
     }"
     @click="musicStore.setShuffle"
   />
