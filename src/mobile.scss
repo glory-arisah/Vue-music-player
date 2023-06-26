@@ -50,7 +50,7 @@ body {
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
-        border: $pink-border;
+        border: $border-pink-light;
         border-radius: 50px;
         // song image div container
         .song__img {
@@ -124,7 +124,7 @@ body {
             .icon {
               cursor: pointer;
               &:hover {
-                color: $clr-pink-lightest;
+                color: $clr-pink-lightest !important;
               }
             }
             .smaller {
@@ -182,9 +182,9 @@ body {
           display: flex;
           justify-content: space-between;
           border: {
-            bottom: $pink-border;
-            left: $pink-border;
-            right: $pink-border;
+            bottom: $border-pink-light;
+            left: $border-pink-light;
+            right: $border-pink-light;
             radius: 5px;
           }
           padding-block: 1.1rem;
@@ -193,7 +193,7 @@ body {
           color: #361134;
           cursor: pointer;
           &:first-of-type {
-            border-top: $pink-border;
+            border-top: $border-pink-light;
             border-radius: 5px;
           }
           &.highlighted {

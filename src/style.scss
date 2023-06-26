@@ -2,12 +2,14 @@
 $md: 50em;
 $text-small: 0.8rem;
 // border colors
-$pink-border: 0.7px solid #e0b1cb;
-$pink-border-light: 0.7px solid #d2abc7;
+$border-purple: 1px solid #f278e2;
+$border-pink: 1px solid #e0b1cb;
+$border-pink-light: 0.7px solid #e0b1cb;
 
 // colors
 $clr-pink-lightest: #fff3f0;
 $clr-purple: #420039;
+$clr-purple-light: #770468;
 
 @mixin responsive($size) {
   @media (min-width: $size) {
@@ -29,93 +31,9 @@ $clr-purple: #420039;
   padding: 0;
   box-sizing: border-box;
 }
-body {
-}
 // mobile view
 @import "mobile";
 // medium to large screens
 @include responsive($md) {
-  body {
-    .page--wrapper {
-      width: 90%;
-
-      main {
-        width: 100%;
-        height: 80%;
-        display: flex;
-        flex-direction: row-reverse;
-        justify-content: center;
-        align-items: center;
-        border-radius: 8px !important;
-        // player container
-        .player--container {
-          width: 60%;
-          height: 100%;
-          border: none !important;
-          border-radius: 0 !important;
-          border-left: 1px solid #b897af !important;
-          display: block;
-          border: {
-            top-right-radius: 8px;
-            bottom-right-radius: 8px;
-          }
-          // song image container
-          .song__img {
-            margin: 0 auto;
-            width: 100%;
-            height: 60%;
-            .music--icon {
-              height: 7.5rem;
-              width: 7.5rem;
-              border: 1px solid #b897af !important;
-              color: #853570;
-              padding: 2rem !important;
-            }
-          }
-          .song--controls {
-            margin: 0 auto;
-            .current-song {
-              margin-bottom: 1rem;
-              font-size: 1.15rem;
-            }
-            .progress {
-              display: inline-block;
-              width: 100% !important;
-            }
-            .controls {
-              margin-top: 1.5rem;
-              svg {
-                font-size: 1.45rem;
-              }
-              .volume {
-                margin-top: 1rem;
-              }
-            }
-          }
-        }
-        // playlist container
-        .playlist--container {
-          background-color: #4b1158;
-          // margin-top: 1.2rem;
-          border: {
-            top-left-radius: 8px;
-            bottom-left-radius: 8px;
-          }
-          width: 60%;
-          height: 100%;
-          justify-content: space-between;
-          article {
-            color: #fff !important;
-            height: 100%;
-            border-bottom: $pink-border !important;
-            border-radius: 5px;
-            align-items: center;
-            &:hover {
-              border-radius: 3px;
-            }
-          }
-        }
-      }
-    }
-  }
+  @import "web-view";
 }
