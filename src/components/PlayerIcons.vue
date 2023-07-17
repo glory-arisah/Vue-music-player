@@ -32,7 +32,7 @@
   />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useMusicStore } from "@/stores/music";
 import { storeToRefs } from "pinia";
 const musicStore = useMusicStore();

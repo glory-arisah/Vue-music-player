@@ -11,7 +11,8 @@
     <div class="song--controls">
       <!-- artist and song name -->
       <span class="current-song"
-        >{{ currentSong.artist }} - {{ currentSong.songName }}</span
+        >{{ currentSong && currentSong.artist }} -
+        {{ currentSong && currentSong.songName }}</span
       >
       <!-- seeker -->
       <input
@@ -19,7 +20,11 @@
         min="0"
         max="100"
         :value="progressValue"
-        @input="musicStore.seekPlayer($event.target.value)"
+        @input="
+          musicStore.seekPlayer(
+            parseInt(($event.target as HTMLInputElement).value)
+          )
+        "
         class="progress"
       />
       <!-- container for the song's currentTime and duration -->
@@ -28,7 +33,7 @@
         <span v-if="currentTime">{{ currentTime }}</span>
         <span v-else>0:00</span>
         <!-- end -->
-        <span>{{ currentSong.duration }}</span>
+        <span>{{ currentSong && currentSong.duration }}</span>
       </p>
       <div class="controls">
         <!-- icons for repeat, play, prev, next and shuffle -->
@@ -40,7 +45,11 @@
           <input
             type="range"
             value="40"
-            @input="musicStore.volumeChange($event.target.value)"
+            @input="
+              musicStore.volumeChange(
+                parseInt(($event.target as HTMLInputElement).value)
+              )
+            "
           />
           <font-awesome-icon
             v-show="volume >= 35"
@@ -58,7 +67,7 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import PlayerIcons from "./PlayerIcons.vue";
 import { useMusicStore } from "@/stores/music";
 import { storeToRefs } from "pinia";
@@ -72,7 +81,5 @@ const { currentTime, currentSong, progressValue, volume, isPlaying } =
   display: flex;
   justify-content: center;
   align-items: center;
-  .music--icon {
-  }
 }
 </style>

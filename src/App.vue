@@ -8,12 +8,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import TheLoader from "./components/TheLoader.vue";
 import SongPlaylist from "./components/SongPlaylist.vue";
 import MusicPlayer from "./components/MusicPlayer.vue";
 import { computed, onMounted, onBeforeMount } from "vue";
 import { useMusicStore } from "./stores/music";
+import { SongProps } from "./stores/state/musicState";
 
 // music store
 const musicStore = useMusicStore();
@@ -31,14 +32,13 @@ onMounted(() => {
   musicStore.progressBarUpdate();
 });
 
-let haveDurationsLoaded = (songList) => {
+let haveDurationsLoaded = (songList: SongProps[]) => {
   return songList.every((songObj) => songObj.duration);
 };
 
 // computed value for loading status
 const loading = computed(() => {
-  const songList = musicStore.songList;
-  return !haveDurationsLoaded(songList);
+  return !haveDurationsLoaded(musicStore.songList);
 });
 </script>
 
